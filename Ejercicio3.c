@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <math.h>
 
 /*
   Ejercicio 3. El problema del papá tacaño.
@@ -105,20 +106,59 @@ int elegir_destino(const Destino *destinos, int n) {
     // int max_conocido = ...; // para apoyar la Regla 4 si asignas un valor simbólico
     // double media = 0.0;
 
+    int conocidos = 0, desconocidos = 0;
     // 1) Contar conocidos vs desconocidos
-
+    for(int i = 0; i<n; i++){
+        if(destinos[i].es_conocido == 1){
+            conocidos++;
+        }
+        else desconocidos++;
+    }
     // 2) Si desconocidos > conocidos:
     //      - Elegir aleatoriamente entre índices con es_conocido == 0
     //      - return indice_aleatorio;
+    if(desconocidos > conocidos){
+        int random = rand() % desconocidos;
+        for(int i = 0; i<n; i++){
+            if(destinos[i].es_conocido == 0){
+                if(random == 0){
+                    return i;
+                }
+                random--;
+            }
+        }
+    }
+
 
     // 3) Calcular "media" según tu diseño
     //      - p. ej., media de costos conocidos
     //      - asignar valor representativo a desconocidos respetando Regla 4
+    int suma = 0;
+    int max_conocido = 0;
+    for(int i = 0; i<n; i++){
+        if(destinos[i].es_conocido == 1){
+            suma += destinos[i].costo;
+            if(destinos[i].costo > max_conocido){
+                max_conocido = destinos[i].costo;
+            }
+        }
+    }
+    double media = (double)suma / conocidos;
+    double valor_representativo = max_conocido + 1;
+    printf("Media de conocidos: %.2f, Valor representativo para desconocidos: %.2f\n", media, valor_representativo);
 
     // 4) Hallar el índice con distancia mínima a la media
     //      - manejar empates de forma determinista (p. ej., menor índice)
-
-    return -1; // Placeholder: reemplaza por el índice elegido
+    int indice_elegido = -1;
+    double min_distancia = 1e9; // un valor grande inicial
+    for(int i = 0; i<n; i++){
+        double distancia = abs(destinos[i].costo - media);
+        if(distancia < min_distancia){
+            min_distancia = distancia;
+            indice_elegido = i; // actualizar índice elegido
+        }
+    }
+    return indice_elegido;
 }
 
 int main(void) {
