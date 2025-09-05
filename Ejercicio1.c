@@ -27,7 +27,16 @@ void intercambiar(int *a, int *b) {
 */
 int particion(int arr[], int bajo, int alto) {
     // Escribe aquí tu función
-    return -1; // Placeholder, reemplazar por el índice real del pivote
+    int pivote = arr[alto];
+    int i = bajo-1;
+    for(int j = bajo; j <= alto-1; j++){
+        if(arr[j] < pivote){
+            i++;
+            intercambiar(&arr[i], &arr[j]);
+        }
+    }
+    intercambiar(&arr[i+1], &arr[alto]);
+    return i+1;
 }
 
 /*
@@ -37,6 +46,12 @@ int particion(int arr[], int bajo, int alto) {
 */
 void quicksort(int arr[], int bajo, int alto) {
     // Escribe aquí tu función
+    if(bajo < alto){
+        int pivote = particion(arr, bajo, alto);
+        quicksort(arr,bajo,pivote-1);
+        quicksort(arr,pivote+1,alto);
+    }
+    return;
 }
 
 /* Función auxiliar para imprimir un arreglo */
