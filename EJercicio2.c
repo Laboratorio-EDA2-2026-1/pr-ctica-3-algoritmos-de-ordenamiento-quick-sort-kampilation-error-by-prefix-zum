@@ -27,7 +27,14 @@ double calcular_promedio_segmento(int arr[], int bajo, int alto) {
     // Pista:
     //   - Acumula en (long long) o (double) para evitar overflow
     //   - Devuelve suma / cantidad como double
-    return 0.0; // placeholder
+    int n = alto-bajo+1;
+    long long promedio = 0;
+    long long zum = 0;
+    for(int i = bajo; i<= alto; i++){
+        zum+=arr[i];
+    }
+    promedio = (double)zum/n;
+    return promedio;
 }
 
 /*
@@ -47,7 +54,31 @@ int particion_por_promedio(int arr[], int bajo, int alto, double pivote) {
     // Escribe aquí tu función
     // Puedes implementar un esquema tipo Hoare o Lomuto pero guiado por pivot double.
     // Recuerda: NO escribas 'pivote' dentro del arreglo; solo compáralo contra arr[i].
-    return -1; // placeholder
+
+    // Escribe aquí tu función
+    int i = bajo;
+    int j = alto;
+
+    while (i <= j) {
+        // Encontrar un elemento en la izquierda que deba estar en la derecha
+        while (arr[i] < pivote) {
+            i++;
+        }
+        // Encontrar un elemento en la derecha que deba estar en la izquierda
+        while (arr[j] > pivote) {
+            j--;
+        }
+
+        // Si los punteros no se han cruzado, intercambiar los elementos
+        if (i <= j) {
+            intercambiar(&arr[i], &arr[j]);
+            i++;
+            j--;
+        }
+    }
+    // 'i' es el punto de división. Los elementos a su izquierda son <= pivote
+    // y los elementos a su derecha son >= pivote.
+    return i;
 }
 
 /*
@@ -60,6 +91,16 @@ int particion_por_promedio(int arr[], int bajo, int alto, double pivote) {
 */
 void quicksort_promedio(int arr[], int bajo, int alto) {
     // Escribe aquí tu función
+    if(bajo < alto){
+        double pivote = calcular_promedio_segmento(arr, bajo, alto);
+        int k = particion_por_promedio(arr, bajo, alto, pivote);
+
+        if(bajo<k-1)
+          quicksort_promedio(arr,bajo, k-1);
+        if(alto>k)
+        quicksort_promedio(arr, k, alto);
+    }
+    return;
 }
 
 /* Utilidad para imprimir un arreglo */
