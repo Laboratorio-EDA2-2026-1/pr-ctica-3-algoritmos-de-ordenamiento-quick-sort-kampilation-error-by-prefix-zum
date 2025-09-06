@@ -31,6 +31,45 @@
  * La idea: usarlas de forma recursiva, estilo quicksort.
  */
 
+void emparejar_tuercas_y_tornillos(int tuercas[], int tornillos[], int n);
+int partir(int arr[], int bajo, int alto, int pivote);
+void swap(int *a, int *b);
+
+
+void swap(int *a, int *b){
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int partir(int arr[], int bajo, int alto, int pivote){
+    int i = bajo;
+
+    for(int j = bajo; j < alto; j++){
+        if(arr[j] < pivote){
+            swap(&arr[i], &arr[j]);
+            i++;
+        }
+        else if(arr[j] == pivote){
+            swap(&arr[j], &arr[alto]);
+            j--; //decrementamos j para no saltarnos el elemento que acabamos de intercambiar
+        }
+    }
+    swap(&arr[i], &arr[alto]);
+    return i;
+}
+
+void emparejar_recursivo(int tuercas[], int tornillos[], int bajo, int alto){
+    if(bajo >= alto)
+        return;
+    int pivote_tornillo = tornillos[alto]; //Tomamos cualquier elemento del arreglo de tornillos para particionar el de tuercas (en este caso el ultimo)
+    int indice_pivote_tuerca = partir(tuercas, bajo, alto, pivote_tornillo); //partir() nos devuelve el índice de la tuerca que encaja perfectamente con el pivote
+    partir(tornillos, bajo, alto, tuercas[indice_pivote_tuerca]);
+    
+    emparejar_recursivo(tuercas, tornillos, bajo, indice_pivote_tuerca-1);
+    emparejar_recursivo(tuercas, tornillos, indice_pivote_tuerca+1, alto);
+}
+
 /*
  * FUNCIÓN PRINCIPAL A IMPLEMENTAR
  *
@@ -53,6 +92,7 @@ void emparejar_tuercas_y_tornillos(int tuercas[], int tornillos[], int n) {
     //   partir_tornillos(tornillos, bajo, alto, tuercas[indicePivote]);
     //
     // Y luego hacer llamadas recursivas en los subarreglos.
+    emparejar_recursivo(tuercas, tornillos, 0, n-1);
 }
 
 /* Imprime un arreglo lineal */
