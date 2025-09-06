@@ -27,14 +27,16 @@ double calcular_promedio_segmento(int arr[], int bajo, int alto) {
     // Pista:
     //   - Acumula en (long long) o (double) para evitar overflow
     //   - Devuelve suma / cantidad como double
-    int n = alto-bajo+1;
-    long long promedio = 0;
-    long long zum = 0;
-    for(int i = bajo; i<= alto; i++){
-        zum+=arr[i];
+
+
+    int n = alto-bajo+1; // cantidad de elementos del rango que promediamos
+    long long promedio = 0; //Inicializamos el promedio en 0
+    long long zum = 0; //Inicializamos la suma en 0
+    for(int i = bajo; i<= alto; i++){ //Para cada elemento del rango [bajo, alto]
+        zum+=arr[i]; //Sumamos el elemento a la suma
     }
-    promedio = (double)zum/n;
-    return promedio;
+    promedio = (double)zum/n; //Calculamos el promedio. El (double) es para que no se trunque la division
+    return promedio; //Regresamos el promedio obtenido
 }
 
 /*
@@ -50,35 +52,34 @@ double calcular_promedio_segmento(int arr[], int bajo, int alto) {
       por ejemplo, (< pivote) a la izquierda y (>= pivote) a la derecha.
     - Asegura progreso (evitar ciclos infinitos cuando todos son iguales).
 */
+
 int particion_por_promedio(int arr[], int bajo, int alto, double pivote) {
     // Escribe aquí tu función
     // Puedes implementar un esquema tipo Hoare o Lomuto pero guiado por pivot double.
     // Recuerda: NO escribas 'pivote' dentro del arreglo; solo compáralo contra arr[i].
 
     // Escribe aquí tu función
-    int i = bajo;
-    int j = alto;
 
-    while (i <= j) {
-        // Encontrar un elemento en la izquierda que deba estar en la derecha
-        while (arr[i] < pivote) {
+    // Usamos el esquema de Hoare modificado para manejar un pivote que no se encuentra en el arreglo
+    // Convención: a la izquierda (< pivote), a la derecha (>= pivote)
+    int i = bajo; //Puntero izquierdo
+    int j = alto; //Puntero derecho
+
+    while (i <= j) { //Mientras los punteros no se encuentren
+        while (arr[i] < pivote){ //Buscamos elementos en la izquierda que deban estar en la derecha 
             i++;
         }
-        // Encontrar un elemento en la derecha que deba estar en la izquierda
-        while (arr[j] > pivote) {
+
+        while (arr[j] > pivote){ //Buscamos elementos en la derecha que deban estar en la izquierda 
             j--;
         }
-
-        // Si los punteros no se han cruzado, intercambiar los elementos
-        if (i <= j) {
+        if (i <= j){ //Si los punteros no se han cruzado, intercambiamos los elementos para ponerlos en su lugar
             intercambiar(&arr[i], &arr[j]);
             i++;
             j--;
         }
     }
-    // 'i' es el punto de división. Los elementos a su izquierda son <= pivote
-    // y los elementos a su derecha son >= pivote.
-    return i;
+    return i; //Regresamos el índice donde se divide el arreglo
 }
 
 /*
@@ -89,18 +90,23 @@ int particion_por_promedio(int arr[], int bajo, int alto, double pivote) {
         2) k = particion_por_promedio(arr, bajo, alto, pivote)
         3) Llamar recursivamente a los segmentos definidos por k
 */
+
+
 void quicksort_promedio(int arr[], int bajo, int alto) {
     // Escribe aquí tu función
-    if(bajo < alto){
-        double pivote = calcular_promedio_segmento(arr, bajo, alto);
-        int k = particion_por_promedio(arr, bajo, alto, pivote);
 
-        if(bajo<k-1)
+    if(bajo < alto){ //El caso base es cuando el segmento tiene 0 o 1 elementos (bajo >= alto)
+        double pivote = calcular_promedio_segmento(arr, bajo, alto); //Calculamos el pivote (promedio)
+        int k = particion_por_promedio(arr, bajo, alto, pivote); //k es el índice donde se divide el arreglo con el promedio como pivote
+        
+        if(bajo<k-1) //Llamada recursiva al segmento izquierdo. La condición sirve para evitar llamadas innecesarias
           quicksort_promedio(arr,bajo, k-1);
-        if(alto>k)
+
+        if(alto>k) //Llamada recursiva al segmento derecho.
         quicksort_promedio(arr, k, alto);
+
     }
-    return;
+    return; //Regresamos si se cumple el caso base
 }
 
 /* Utilidad para imprimir un arreglo */
