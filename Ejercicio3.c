@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <math.h>
 
 /*
   Ejercicio 3. El problema del papá tacaño.
@@ -96,7 +97,7 @@ int parsear_token(const char *tok, Destino *d) {
  *             esté más cercano a la media. En caso de empate, define
  *             una política simple, p. ej., el de menor índice.
  */
-int elegir_destino(const Destino *destinos, int n) {
+int elegir_destino(Destino *destinos, int n) {
     // Escribe aquí tu función
 
     // Sugerencias de variables que podrías usar:
@@ -107,18 +108,77 @@ int elegir_destino(const Destino *destinos, int n) {
 
     // 1) Contar conocidos vs desconocidos
 
+    int conocidos = 0, desconocidos = 0; //Contadores de conocidos y desconocidos
+    
+    for(int i = 0; i<n; i++){ //Contamos los conocidos y los desconocidos
+        if(destinos[i].es_conocido == 1){
+            conocidos++;
+        }
+        else desconocidos++;
+    }
+
     // 2) Si desconocidos > conocidos:
     //      - Elegir aleatoriamente entre índices con es_conocido == 0
     //      - return indice_aleatorio;
+
+    //Regla 5. Cuando hay más desconocidos que conocidos, se elige un desconocido al azar
+    if(desconocidos > conocidos){
+        int random = rand() % desconocidos; //Número aleatorio entre 0 y desconocidos-1 
+        for(int i = 0; i<n; i++){ //Recorremos el arreglo buscando el desconocido en la posición random
+            if(destinos[i].es_conocido == 0){ //Si el elemento encontrado es desconocido, usamos ese índice. De lo contrario, buscamos el siguiente elemento, hasta encontrar un desconocido
+                if(random == 0){
+                    return i;
+                }
+                random--;
+            }
+        }
+    }
+
 
     // 3) Calcular "media" según tu diseño
     //      - p. ej., media de costos conocidos
     //      - asignar valor representativo a desconocidos respetando Regla 4
 
+    int suma = 0; //Suma de los costos conocidos (inicializada en 0)
+    int max_conocido = 0; //Máximo costo conocido (inicializado en 0)
+    for(int i = 0; i<n; i++){ //Recorremos el arreglo para calcular la suma de los costos conocidos y el máximo costo conocido
+        if(destinos[i].es_conocido == 1){ //Si se cumple, el elemento es conocido
+            suma += destinos[i].costo; //Como es conocido, sumamos su costo a la suma total
+            if(destinos[i].costo > max_conocido){ //Si el costo del elemento es mayor que el máximo conocido, actualizamos el máximo conocido
+                max_conocido = destinos[i].costo;
+            }
+        }
+    }
+    double media = (double)suma / conocidos; //Obtenemos el promedio de los costos conocidos
+    //Asignamos a los desconocidos un valor representativo mayor que cualquier conocido
+    double valor_representativo = max_conocido + 1; //max_conocido + 1 es un valor mayor que cualquier conocido
+
+    for(int i = 0; i<n; i++){ //Recorremos el arreglo para asignar el valor representativo a los desconocidos
+        if(destinos[i].es_conocido == 0){ //Si el elemento es desconocido, le asignamos el valor representativo
+            destinos[i].costo = valor_representativo; //Asignamos el valor representativo al costo del destino desconocido
+        }
+    }
+    /*Nota:
+        -- Para poder asignar el valor representativo a los desconocidos, tuvimos que quitar el const del arreglo de destinos en los parámetros, de lo contrario, no podría modificarse.
+    */
+
+
+
     // 4) Hallar el índice con distancia mínima a la media
     //      - manejar empates de forma determinista (p. ej., menor índice)
 
-    return -1; // Placeholder: reemplaza por el índice elegido
+    int indice_elegido = -1; // índice del destino elegido (inicializado en -1)
+    double min_distancia = 1e9; // un valor grande inicial (para que cualquier valor sea menor que este)
+    
+    for(int i = 0; i<n; i++){ //Recorremos el arreglo para encontrar el índice con la distancia mínima a la media
+        double distancia = abs(destinos[i].costo - media); //Calculamos la distancia entre el costo del destino y la media. El valor absoluto es para evitar distancias negativas, en caso de que el valor sea menor a la media
+        if(distancia < min_distancia){ //Si la distancia es menor que la distancia mínima, actualizamos la distancia mínima y el índice elegido
+            min_distancia = distancia;
+            indice_elegido = i; // actualizar índice elegido
+        }
+        //En caso de que haya dos números con la misma distancia, se elige el de menor índice. Esto por la condición (distancia < min_distancia), ya que si la distancia es igual, no se actualiza el índice elegido
+    }
+    return indice_elegido; //Retornamos el índice elegido
 }
 
 int main(void) {

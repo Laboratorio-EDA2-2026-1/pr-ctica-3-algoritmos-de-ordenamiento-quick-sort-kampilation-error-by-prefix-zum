@@ -27,7 +27,17 @@ void intercambiar(int *a, int *b) {
 */
 int particion(int arr[], int bajo, int alto) {
     // Escribe aquí tu función
-    return -1; // Placeholder, reemplazar por el índice real del pivote
+
+    int pivote = arr[alto]; //Elegimos el último elemento como pivote (puede ser cualquiera)
+    int i = bajo-1; //i es el índice del elemento más pequeño
+    for(int j = bajo; j <= alto-1; j++){ //Recorremos el arreglo desde bajo hasta alto-1 (por el índice del pivote)
+        if(arr[j] < pivote){ //Si el elemento actual es menor que el pivote
+            i++;    //Incrementamos el índice del elemento más pequeño
+            intercambiar(&arr[i], &arr[j]); //Intercambiamos el elemento actual con el elemento más pequeño
+        }
+    }
+    intercambiar(&arr[i+1], &arr[alto]); //Intercambiamos el pivote con el elemento siguiente al más pequeño
+    return i+1; //Regresamos el índice del pivote
 }
 
 /*
@@ -37,6 +47,13 @@ int particion(int arr[], int bajo, int alto) {
 */
 void quicksort(int arr[], int bajo, int alto) {
     // Escribe aquí tu función
+
+    if(bajo < alto){ //Caso base: si bajo es menor que alto
+        int pivote = particion(arr, bajo, alto); //Partimos el arreglo y obtenemos el índice del pivote
+        quicksort(arr,bajo,pivote-1); //Aplicamos quicksort a la parte izquierda de la partición
+        quicksort(arr,pivote+1,alto);  //Aplicamos quicksort a la parte derecha de la partición
+    }
+    return; //Si bajo es mayor o igual que alto, no hacemos nada (caso base)
 }
 
 /* Función auxiliar para imprimir un arreglo */
